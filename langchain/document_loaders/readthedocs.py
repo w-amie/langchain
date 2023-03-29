@@ -42,15 +42,26 @@ class ReadTheDocsLoader(BaseLoader):
         """Load documents."""
         from bs4 import BeautifulSoup
 
+        # def _clean_data(data: str) -> str:
+        #     soup = BeautifulSoup(data, **self.bs_kwargs)
+        #     text = soup.find_all("main", {"id": "main-content"})
+        #     if len(text) != 0:
+        #         text = text[0].get_text()
+        #     else:
+        #         text = ""
+        #     return "\n".join([t for t in text.split("\n") if t])
+        
         def _clean_data(data: str) -> str:
             soup = BeautifulSoup(data, **self.bs_kwargs)
-            text = soup.find_all("main", {"id": "main-content"})
-            if len(text) != 0:
-                text = text[0].get_text()
-            else:
-                text = ""
-            return "\n".join([t for t in text.split("\n") if t])
-
+            text = ""
+            for tag in ["p", "h1", "a"]:
+                tag_text = soup.find_all(tag)
+                if len(tag_text) != 0:
+                    tag_text = "\n".join([t.get_text() for t in tag_text])
+                    text += tag_text + "\n"
+            
+            return text
+        
         docs = []
         for p in Path(self.file_path).rglob("*"):
             if p.is_dir():
