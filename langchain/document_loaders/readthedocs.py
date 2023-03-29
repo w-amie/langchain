@@ -41,28 +41,42 @@ class ReadTheDocsLoader(BaseLoader):
     def load(self) -> List[Document]:
         """Load documents."""
         from bs4 import BeautifulSoup
+        from bs4.element import Comment
+        print("readthedocs - load func")
 
         # def _clean_data(data: str) -> str:
-        #     soup = BeautifulSoup(data, **self.bs_kwargs)
-        #     text = soup.find_all("main", {"id": "main-content"})
+        #     soup_kwargs = self.bs_kwargs or {'parser': 'html.parser'}
+        #     soup = BeautifulSoup(data, **soup_kwargs)
+        #     # soup = BeautifulSoup(data, **self.bs_kwargs )
+        #     text = soup.findAll(text=True)
+        #     print(text)
         #     if len(text) != 0:
         #         text = text[0].get_text()
         #     else:
         #         text = ""
+        #     print(text)
         #     return "\n".join([t for t in text.split("\n") if t])
         
+        # //https://stackoverflow.com/questions/1936466/how-to-scrape-only-visible-webpage-text-with-beautifulsoup
+        def tag_visible(element):
+            if element.parent.name in ['style', 'script', 'head', 'title', 'meta', '[document]']:
+                return False
+            if isinstance(element, Comment):
+                return False
+            return True
+        
         def _clean_data(data: str) -> str:
+            print('_clean_data')
             soup = BeautifulSoup(data, **self.bs_kwargs)
-            text = ""
-            for tag in ["p", "h1", "a"]:
-                tag_text = soup.find_all(tag)
-                if len(tag_text) != 0:
-                    tag_text = "\n".join([t.get_text() for t in tag_text])
-                    text += tag_text + "\n"
-            
+            texts = soup.findAll(text=True)
+            visible_texts = filter(tag_visible, texts) 
+            text = u" ".join(t.strip() for t in visible_texts)
+            print(text)
             return text
         
+        
         docs = []
+        print("self.file_path: "+ self.file_path)
         for p in Path(self.file_path).rglob("*"):
             if p.is_dir():
                 continue
