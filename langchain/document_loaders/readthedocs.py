@@ -44,19 +44,6 @@ class ReadTheDocsLoader(BaseLoader):
         from bs4.element import Comment
         print("readthedocs - load func")
 
-        # def _clean_data(data: str) -> str:
-        #     soup_kwargs = self.bs_kwargs or {'parser': 'html.parser'}
-        #     soup = BeautifulSoup(data, **soup_kwargs)
-        #     # soup = BeautifulSoup(data, **self.bs_kwargs )
-        #     text = soup.findAll(text=True)
-        #     print(text)
-        #     if len(text) != 0:
-        #         text = text[0].get_text()
-        #     else:
-        #         text = ""
-        #     print(text)
-        #     return "\n".join([t for t in text.split("\n") if t])
-        
         # //https://stackoverflow.com/questions/1936466/how-to-scrape-only-visible-webpage-text-with-beautifulsoup
         def tag_visible(element):
             if element.parent.name in ['style', 'script', 'head', 'title', 'meta', '[document]']:
