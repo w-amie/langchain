@@ -126,8 +126,8 @@ class VectorStore(ABC):
     ) -> VectorStore:
         """Return VectorStore initialized from texts and embeddings."""
 
-    def as_retriever(self) -> VectorStoreRetriever:
-        return VectorStoreRetriever(vectorstore=self)
+    def as_retriever(self, **kwargs: Any) -> BaseRetriever:
+        return VectorStoreRetriever(vectorstore=self, **kwargs)
 
 
 class VectorStoreRetriever(BaseRetriever, BaseModel):
@@ -159,3 +159,6 @@ class VectorStoreRetriever(BaseRetriever, BaseModel):
         else:
             raise ValueError(f"search_type of {self.search_type} not allowed.")
         return docs
+
+    async def aget_relevant_documents(self, query: str) -> List[Document]:
+        raise NotImplementedError("VectorStoreRetriever does not support async")
