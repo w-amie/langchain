@@ -2,10 +2,7 @@ from pathlib import Path
 from unittest.mock import AsyncMock, Mock
 
 import pytest
-from langchain_tests.integration_tests.vectorstores import (
-    AsyncReadWriteTestSuite,
-    ReadWriteTestSuite,
-)
+from langchain_tests.integration_tests.vectorstores import VectorStoreIntegrationTests
 
 from langchain_core.documents import Document
 from langchain_core.embeddings.fake import DeterministicFakeEmbedding
@@ -13,15 +10,9 @@ from langchain_core.vectorstores import InMemoryVectorStore
 from tests.unit_tests.stubs import _any_id_document
 
 
-class TestInMemoryReadWriteTestSuite(ReadWriteTestSuite):
+class TestInMemoryStandard(VectorStoreIntegrationTests):
     @pytest.fixture
     def vectorstore(self) -> InMemoryVectorStore:
-        return InMemoryVectorStore(embedding=self.get_embeddings())
-
-
-class TestAsyncInMemoryReadWriteTestSuite(AsyncReadWriteTestSuite):
-    @pytest.fixture
-    async def vectorstore(self) -> InMemoryVectorStore:
         return InMemoryVectorStore(embedding=self.get_embeddings())
 
 
@@ -44,7 +35,7 @@ async def test_inmemory_similarity_search() -> None:
 
 
 async def test_inmemory_similarity_search_with_score() -> None:
-    """Test end to end similarity search with score"""
+    """Test end to end similarity search with score."""
     store = await InMemoryVectorStore.afrom_texts(
         ["foo", "bar", "baz"], DeterministicFakeEmbedding(size=3)
     )
@@ -72,7 +63,7 @@ async def test_add_by_ids() -> None:
 
 
 async def test_inmemory_mmr() -> None:
-    """Test MMR search"""
+    """Test MMR search."""
     texts = ["foo", "foo", "fou", "foy"]
     docsearch = await InMemoryVectorStore.afrom_texts(
         texts, DeterministicFakeEmbedding(size=6)
@@ -156,7 +147,6 @@ async def test_inmemory_upsert() -> None:
 
 async def test_inmemory_get_by_ids() -> None:
     """Test get by ids."""
-
     store = InMemoryVectorStore(embedding=DeterministicFakeEmbedding(size=3))
 
     store.upsert(
